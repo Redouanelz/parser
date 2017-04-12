@@ -21,27 +21,25 @@ public class test {
 		 * 1. search if exist in the list then get last part of the string after the ';' = consomation for the searched tranche
 		 * */
 		
-		fileParser fp=new fileParser("min170201.txt");		
+		fileParser fp=new fileParser("http://www.bmypro-creation.com/reda/min170201.js");				
 		
-		
-		String[] consomation=fp.getConsomation("00:00:00","12:00:00","23:55:00");
-		
-		final int l=consomation.length;
-		
+		String[] consomation = fp.getConsomation("00:00:00","12:00:00","23:55:00");
+				
 		/* get consomation for each time tranche */
-		int v[]=new int[l];
-		for (int i = 0; i < v.length; i++)
-			v[i]=Integer.parseInt(consomation[i]);
-		for (int i = 0; i < v.length; i++) System.out.println(v[i]);
-		
-		if(!fp.errorExist()) System.out.println("-------------------");
+		System.out.println("-- Consomations for each tranche --");
+		System.out.println("Tranche 1 [00:00:00] :" + consomation[0]);
+		System.out.println("Tranche 2 [12:00:00] :" + consomation[1]);
+		System.out.println("Tranche 3 [23:55:00] :" + consomation[2]);
 		
 		/* get consomation beetween each time tranche */
-		int t[]=new int[l];
-		for (int i = 0; i < t.length; i++)
-			if(i==0) t[i]=v[i];
-			else  t[i]=v[i]-v[i-1];
-		for (int i = 0; i < t.length; i++) System.out.println(t[i]);	
+		System.out.println("-- Consomations between  --");
+		System.out.println("between [00:00:00] and  [00:00:00] :"  + consomation[0]);
+		System.out.println("between [00:00:00] and  [12:00:00] :"  + ( Integer.parseInt(consomation[1]) - Integer.parseInt(consomation[0]) ));
+		System.out.println("between [12:00:00] and  [23:55:00] :" + ( Integer.parseInt(consomation[2]) - Integer.parseInt(consomation[1]) ));
+		System.out.println("between [23:55:00] and  [23:55:00] :" + consomation[2]);
+				
+		
+	
 		
 		System.out.println(fp.errorMsg());
 			
