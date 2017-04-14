@@ -1,48 +1,60 @@
 package parser;
 
 
+import java.sql.*;
+
 public class test {
+
 
 	public static void main(String[] args) {
 		
-		 /* PART 1 (Constuctor)
-		 * 1.  get an url string 
-		 * 2. Check if there is ':' the geted string is an url else its a file 
-		 * 3. call getLineByLine
-		 * 
-		 * PART 2 (geLineByLine function)
-		 * 1. get the buf and fill the stringBuilder with line by line data from the geted file
-		 * 
-		 * PART 3 (getConsomation function)
-		 * 1. pass array of strings as parameters ( tranches of time )
-		 * 2. for each passed parameter we call searchInList function
-		 * 
-		 * PART 4 (searchInList function)
-		 * 1. search if exist in the list then get last part of the string after the ';' = consomation for the searched tranche
-		 * */
+		/* set start and end day file name */
+		int startday = 170201;
+		int endday = 170228;
 		
-		fileParser fp=new fileParser("http://www.bmypro-creation.com/reda/min170201.js");				
+		Connection cnx =  db.cnx();		
+		Statement st;
 		
-		String[] consomation = fp.getConsomation("00:00:00","12:00:00","23:55:00");
-				
-		/* get consomation for each time tranche */
-		System.out.println("-- Consomations for each tranche --");
-		System.out.println("Tranche 1 [00:00:00] :" + consomation[0]);
-		System.out.println("Tranche 2 [12:00:00] :" + consomation[1]);
-		System.out.println("Tranche 3 [23:55:00] :" + consomation[2]);
-		
-		/* get consomation beetween each time tranche */
-		System.out.println("-- Consomations between  --");
-		System.out.println("between [00:00:00] and  [00:00:00] :"  + consomation[0]);
-		System.out.println("between [00:00:00] and  [12:00:00] :"  + ( Integer.parseInt(consomation[1]) - Integer.parseInt(consomation[0]) ));
-		System.out.println("between [12:00:00] and  [23:55:00] :" + ( Integer.parseInt(consomation[2]) - Integer.parseInt(consomation[1]) ));
-		System.out.println("between [23:55:00] and  [23:55:00] :" + consomation[2]);
-				
-		
-	
-		
-		System.out.println(fp.errorMsg());
+		/* Uncomment this bloc of code if you don't need to delete all consomtions data from database 
+		 
+			Statement st_;		
+			 try {
+				st_ = cnx.createStatement();
+				 st_.executeUpdate("DELETE FROM consomations;");
+				 System.out.println("Donnée supprimer");
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				} 
+		 */
+
+		 
+		for(int compteur = startday; compteur <= endday ; compteur++ ){
 			
+			int day = compteur;
+			fileParser fp = new fileParser("http://www.bmypro-creation.com/reda/parser/min"+compteur+".js");							
+	
+			try {
+				st = cnx.createStatement();
+				ResultSet rs = st.executeQuery("SELECT * FROM tranches");			
+				int[] consomation_par_tranche = new int[3];  int j=0;
+				while(rs.next()){				
+					//float priceperunit = rs.getFloat("price-per-unit");
+					String[] consomation = fp.getConsomation(rs.getString("from"),rs.getString("to"));				
+					consomation_par_tranche[j]= Integer.parseInt(consomation[1]) - Integer.parseInt(consomation[0]);
+					j++;														
+				}
+					 int total = (consomation_par_tranche[0] + consomation_par_tranche[1] + consomation_par_tranche[2]);
+					 st.executeUpdate("INSERT INTO consomations SET day = '" + day + "' , t1 = " + consomation_par_tranche[0] + " , t2 = " + consomation_par_tranche[1] + ", t3 = "  + consomation_par_tranche[0] + " , total  = " + total + ";");
+					 System.out.println( day + " Enregistrer");
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+			System.out.println(fp.errorMsg());		
+			
+		}
+		
+		
 	}
 
 }

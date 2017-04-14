@@ -71,7 +71,8 @@ public class fileParser {
 			/* 1. first case : if url contains ':'  InputStram = new URL
 			 * 2. second case: else InputStream = new FileInputStream ..
 			 */
-			if(urlChaine.indexOf(':')>=0) in= new URL(urlChaine).openStream();
+			if(
+					urlChaine.indexOf(':')>=0) in= new URL(urlChaine).openStream();
 			else in=new FileInputStream(new File(urlChaine));
 			BufferedInputStream buf=new BufferedInputStream(in);
 			getLineByLine(buf, Tsb);
