@@ -9,13 +9,13 @@ public class test {
 	public static void main(String[] args) {
 		
 		/* set start and end day file name */
-		int startday = 170201;
-		int endday = 170228;
+		int startday = 170309;
+		int endday = 170309;
 		
 		Connection cnx =  db.cnx();		
 		Statement st;
 		
-		/* Uncomment this bloc of code if you don't need to delete all consomtions data from database */
+		/* Comment/Uncomment this bloc of code if you don't need to delete all consomtions data from database */
 		 
 			Statement st_;		
 			 try {

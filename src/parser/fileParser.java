@@ -7,10 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 public class fileParser {
+	
 	/* -- */
 	ArrayList<StringBuilder> Tsb=new ArrayList<>();
 	private String errorMsg="";
@@ -31,16 +34,43 @@ public class fileParser {
 			}
 	}
 	
+		
+	
+    boolean plusMinus = false;
+    int plusMinusval = 0;
 	private StringBuilder searchInList(ArrayList<StringBuilder> Tsb,String sv){
+    	boolean equaled = false;
+    	
 		ListIterator<StringBuilder> li=Tsb.listIterator();
 		StringBuilder s1=null;
+		
 		while (li.hasNext()) {
 			s1=li.next();
-			if(s1.indexOf(sv) >= 0)					
-				break;					
+
+			if(s1.indexOf(sv) >= 0)	
+			{
+		    	equaled = true;
+				break;	
+			}													
+		}
+		
+		if(equaled == false && !sv.equals("NOTHING")  ){
+			  	DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm");
+			    LocalTime lt = LocalTime.parse(sv);
+			    String new_sv ;
+			    plusMinusval= plusMinusval + 5;
+
+			    if(plusMinus==false)
+				 {	new_sv = df.format(lt.plusMinutes(plusMinusval)); plusMinus= true; }
+			    else
+			     {  new_sv = df.format(lt.minusMinutes(plusMinusval)); plusMinus = false;  }
+			    System.out.println(" New sv  : " + new_sv);
+			    return searchInList(Tsb, new_sv);			   
 		}
 		return s1;
 	}
+	
+	
 	
 	private String getLast(StringBuilder s){
 		StringBuilder r=new StringBuilder("");
@@ -53,8 +83,12 @@ public class fileParser {
 		if(!errorExist()) {
 			String c[]=new String[sv.length];
 			for (int j = 0; j < sv.length; j++)
+			{
+				plusMinusval = 0;  plusMinus = false; /* initialize for each call */
 				c[j]=getLast(searchInList(Tsb, sv[j]));
-			return c;
+				System.out.println(" " + sv[j] + " - " + c[j]);
+			}
+			return c;			
 		} else return new String[0];
 	}
 	
